@@ -176,9 +176,12 @@ async function pageStaff(){
       ${staff.length ? staff.map(a=>`
         <div class="staff-row">
           <div><strong>${a.name}</strong>${a.section?` · Section ${a.section}`:''}<br><span class="staff-tag">${a.role}</span></div>
-          <span class="id-mono">${a.username}</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="id-mono">${a.username}</span>
+            <button class="btn sm ghost danger" data-staff-delete="${a.uid}" data-staff-name="${a.name}">Delete</button>
+          </div>
         </div>
-      `).join('') : `<div class="empty-state">No Principal or Adviser accounts yet.</div>`}
+`).join('') : `<div class="empty-state">No Principal or Adviser accounts yet.</div>`}
     </div>
   `;
 }
