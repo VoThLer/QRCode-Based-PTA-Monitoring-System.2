@@ -66,17 +66,17 @@ async function loadSettings(){
 ============================================================ */
 function guardPage(allowedRoles, onReady){
   auth.onAuthStateChanged(async (user)=>{
-    if(!user){ window.location.href = 'login.html'; return; }
+    if(!user){ window.location.href = 'index.html'; return; }
     const accDoc = await fsDb.collection('accounts').doc(user.uid).get();
     if(!accDoc.exists){
       await auth.signOut();
-      window.location.href = 'login.html';
+      window.location.href = 'index.html';
       return;
     }
     const acc = accDoc.data();
     session = {uid:user.uid, role:acc.role, name:acc.name, section:acc.section||null, studentId:acc.studentId||null};
     if(!allowedRoles.includes(session.role)){
-      window.location.href = HOME_PAGE[session.role] || 'login.html';
+      window.location.href = HOME_PAGE[session.role] || 'index.html';
       return;
     }
     await loadSettings();
