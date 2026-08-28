@@ -383,6 +383,7 @@ function wirePageEvents(){
     document.getElementById('students-table-wrap').innerHTML = studentsTable(filtered, payments, {edit:true});
     wireQrButtons(document.getElementById('students-table-wrap'));
     document.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', ()=>openEditStudent(b.dataset.edit)));
+    wireDeleteButtons(document.getElementById('students-table-wrap'));
   });
 
   const methodGrid = document.getElementById('method-grid');
