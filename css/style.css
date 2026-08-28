@@ -279,3 +279,7 @@
 .role-title{ font-weight:600; }
 .role-desc{ font-size:13px; color:#7a7267; }
 .role-card.active .role-desc{ color:#f0dede; }
+
+.btn.danger, .btn.sm.ghost.danger{ color:#b3261e; border-color:#e8b4af; }
+.btn.danger{ background:#b3261e; color:#fff; border-color:#b3261e; }
+.btn.sm.ghost.danger:hover{ background:#fbeae8; }
