@@ -96,8 +96,9 @@ function showLogin(){
       }
     });
   });
-  document.querySelector('.role-card[data-role="admin"]').classList.add('active');
+   document.querySelector('.role-card[data-role="admin"]').classList.add('active');
   selectedRole = 'admin';
+  document.getElementById('id-label').textContent = 'Email';
   document.getElementById('forgot-wrap').style.display = 'block';
 
   document.getElementById('login-btn').addEventListener('click', async ()=>{
