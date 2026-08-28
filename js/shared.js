@@ -99,7 +99,7 @@ function wireLogout(){
   if(!btn) return;
   btn.addEventListener('click', async ()=>{
     await auth.signOut();
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
   });
 }
 
