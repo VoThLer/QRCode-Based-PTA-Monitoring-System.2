@@ -269,3 +269,13 @@
   .staff-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13.5px;}
   .staff-row:last-child{border-bottom:none;}
   .staff-tag{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;}
+
+.role-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:20px 0; }
+.role-card{ border:1px solid #e5decf; border-radius:10px; padding:14px; cursor:pointer; transition:.15s; }
+.role-card:hover{ border-color:#7a1f2b; }
+.role-card.active{ background:#7a1f2b; border-color:#7a1f2b; }
+.role-card.active .role-title, .role-card.active .role-desc{ color:#fff; }
+.role-icon{ font-size:20px; margin-bottom:4px; }
+.role-title{ font-weight:600; }
+.role-desc{ font-size:13px; color:#7a7267; }
+.role-card.active .role-desc{ color:#f0dede; }
