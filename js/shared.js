@@ -185,6 +185,37 @@ function studentsTable(list, payments, opts){
 function wireQrButtons(root){
   (root||document).querySelectorAll('[data-qr]').forEach(b=>b.addEventListener('click', ()=>openQrModal(b.dataset.qr)));
 }
+function wireDeleteButtons(root){
+  (root||document).querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click', ()=>confirmDeleteStudent(b.dataset.delete)));
+}
+async function confirmDeleteStudent(studentId){
+  const s = await fetchOneStudent(studentId);
+  if(!s) return;
+  openModal(`
+    <h3>Delete student?</h3>
+    <div class="sub">${s.name} · ${s.id}</div>
+    <div class="login-note" style="margin-top:8px;">This permanently removes the student's record and payment history. This cannot be undone.</div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="del-cancel">Cancel</button>
+      <button class="btn danger" id="del-confirm">Delete student</button>
+    </div>
+  `);
+  document.getElementById('del-cancel').addEventListener('click', closeModal);
+  document.getElementById('del-confirm').addEventListener('click', async ()=>{
+    try{
+      const paySnap = await fsDb.collection('payments').where('studentId','==',studentId).get();
+      const batch = fsDb.batch();
+      paySnap.docs.forEach(d=>batch.delete(d.ref));
+      batch.delete(fsDb.collection('students').doc(studentId));
+      await batch.commit();
+      closeModal();
+      showToast('Student deleted.', 'success');
+      if(typeof reloadCurrentPage === 'function') reloadCurrentPage();
+    }catch(e){
+      showToast('Delete failed: '+(e.message||'try again'), 'error');
+    }
+  });
+}
 async function openQrModal(studentId){
   const s = await fetchOneStudent(studentId);
   openModal(`
