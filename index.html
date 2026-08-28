@@ -13,9 +13,7 @@
 </head>
 <body>
 
-<div id="boot-screen" class="boot-screen">Loading EskwelaPay…</div>
-
-<div id="login-screen" style="display:none;">
+<div id="login-screen">
   <div class="login-card" id="login-card-content"></div>
 </div>
 
@@ -24,16 +22,16 @@
 <script src="js/firebase-config.js"></script>
 <script src="js/shared.js"></script>
 <script>
-let ANY_ADMIN_EXISTS = null;
+let selectedRole = null;
 
-async function boot(){
-  const configFilledIn = firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('PASTE_YOUR');
-  if(!configFilledIn){
-    document.getElementById('boot-screen').innerHTML =
-      'This file needs your Firebase project config pasted in near the top of js/firebase-config.js ' +
-      '(see the setup comment) before it can run. Once that is in place, reload this page.';
-    return;
-  }
+const ROLES = [
+  {key:'admin', title:'PTA Officer / Admin', desc:'Manage payment records and system data.', icon:'👤'},
+  {key:'adviser', title:'Adviser / Teacher', desc:'View payment info of assigned students only.', icon:'📗'},
+  {key:'principal', title:'Principal', desc:'View payment info of all students in the school.', icon:'🎓'},
+  {key:'student', title:'Student / Parent', desc:'View your own student\'s payment info.', icon:'👪'},
+];
+
+function boot(){
   auth.onAuthStateChanged(async (user)=>{
     if(user){
       const accDoc = await fsDb.collection('accounts').doc(user.uid).get();
@@ -43,99 +41,97 @@ async function boot(){
         return;
       }
       const acc = accDoc.data();
-      window.location.href = HOME_PAGE[acc.role] || 'login.html';
+      window.location.href = HOME_PAGE[acc.role] || 'index.html';
     }else{
-      await checkAdminExists();
       showLogin();
     }
   });
 }
-async function checkAdminExists(){
-  try{
-    const snap = await fsDb.collection('accounts').where('role','==','admin').limit(1).get();
-    ANY_ADMIN_EXISTS = !snap.empty;
-  }catch(e){
-    // Before any account/rule exists yet, or offline - assume bootstrap needed.
-    ANY_ADMIN_EXISTS = false;
-  }
-}
 
-/* ============================================================
-   LOGIN SCREEN
-============================================================ */
 function showLogin(){
-  document.getElementById('boot-screen').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
   const box = document.getElementById('login-card-content');
-
-  if(!ANY_ADMIN_EXISTS){
-    box.innerHTML = `
-      <div class="seal-row">
-        <div class="seal seal-img"><img src="assets/logo.png" alt="EskwelaPay seal"></div>
-        <div><div class="login-eyebrow">Sta. Lucia National High School · Pagadian City</div></div>
-      </div>
-      <h1>EskwelaPay</h1>
-      <div class="login-sub">First-time setup - create the PTA Officer / Admin account.</div>
-      <div class="setup-banner">No Admin account exists yet in this Firebase project. Create one now - you'll use it to log in and to create every other account (Principal, Adviser, Parent, Student) afterward.</div>
-      <div class="login-field"><label>Admin's full name</label><input id="boot-name" placeholder="e.g. Liza Fernandez"></div>
-      <div class="login-field"><label>Choose a username</label><input id="boot-user" placeholder="e.g. admin" class="mono"></div>
-      <div class="login-field"><label>Choose a password</label><input id="boot-pass" type="password" placeholder="minimum 6 characters"></div>
-      <button class="btn-primary" id="boot-btn">Create Admin account &amp; continue</button>
-      <div class="login-error" id="login-error"></div>
-    `;
-    document.getElementById('boot-btn').addEventListener('click', async ()=>{
-      const err = document.getElementById('login-error');
-      const name = document.getElementById('boot-name').value.trim();
-      const user = document.getElementById('boot-user').value.trim();
-      const pass = document.getElementById('boot-pass').value;
-      if(!name || !user || !pass){ err.textContent='Fill in every field.'; return; }
-      if(pass.length<6){ err.textContent='Password needs to be at least 6 characters.'; return; }
-      try{
-        const cred = await auth.createUserWithEmailAndPassword(slug(user)+LOGIN_DOMAIN, pass);
-        await fsDb.collection('accounts').doc(cred.user.uid).set({role:'admin', name, username:slug(user)});
-        await fsDb.collection('settings').doc('main').set(SETTINGS, {merge:true});
-        showToast('Admin account created. Welcome!', 'success');
-        // onAuthStateChanged will pick this up and redirect to admin.html.
-      }catch(e){
-        err.textContent = friendlyAuthError(e);
-      }
-    });
-    return;
-  }
-
   box.innerHTML = `
     <div class="seal-row">
       <div class="seal seal-img"><img src="assets/logo.png" alt="EskwelaPay seal"></div>
       <div><div class="login-eyebrow">Sta. Lucia National High School · Pagadian City</div></div>
     </div>
     <h1>EskwelaPay</h1>
-    <div class="login-sub">QR code-based PTA payment monitoring. Log in below.</div>
-    <div class="login-field"><label>Username / Student ID</label><input id="login-user" class="mono" autocomplete="username"></div>
+    <div class="login-sub">First-time setup - create the PTA Officer / Admin account.</div>
+
+    <div class="role-grid" id="role-grid">
+      ${ROLES.map(r=>`
+        <div class="role-card" data-role="${r.key}">
+          <div class="role-icon">${r.icon}</div>
+          <div class="role-title">${r.title}</div>
+          <div class="role-desc">${r.desc}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="login-field"><label id="id-label">Username</label><input id="login-user" class="mono" autocomplete="username"></div>
     <div class="login-field"><label>Password</label><input type="password" id="login-pass" autocomplete="current-password"></div>
-    <button class="btn-primary" id="login-btn">Log in</button>
+    <button class="btn-primary" id="login-btn">Continue</button>
     <div class="login-error" id="login-error"></div>
-    <div class="login-note" style="margin-top:16px;">
-      Real accounts, checked by Firebase Authentication - each role only sees what its Security Rules allow, enforced on the server, not just hidden in the interface.
-      Students/parents log in with the Student ID and password the Admin generated for them.
+    <div class="login-note" id="forgot-wrap" style="display:none; margin-top:12px;">
+      <a href="#" id="forgot-link">Forgot password?</a>
     </div>
   `;
+
+  document.querySelectorAll('.role-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('active'));
+      card.classList.add('active');
+      selectedRole = card.dataset.role;
+      const label = document.getElementById('id-label');
+      const forgotWrap = document.getElementById('forgot-wrap');
+      if(selectedRole==='admin'){
+        label.textContent = 'Email';
+        forgotWrap.style.display = 'block';
+      }else if(selectedRole==='student'){
+        label.textContent = 'Student ID';
+        forgotWrap.style.display = 'none';
+      }else{
+        label.textContent = 'Username';
+        forgotWrap.style.display = 'none';
+      }
+    });
+  });
+  document.querySelector('.role-card[data-role="admin"]').classList.add('active');
+  selectedRole = 'admin';
+  document.getElementById('forgot-wrap').style.display = 'block';
+
   document.getElementById('login-btn').addEventListener('click', async ()=>{
     const err = document.getElementById('login-error');
-    const user = document.getElementById('login-user').value.trim();
+    const idVal = document.getElementById('login-user').value.trim();
     const pass = document.getElementById('login-pass').value;
-    if(!user || !pass){ err.textContent='Enter both a username/ID and password.'; return; }
+    if(!idVal || !pass){ err.textContent='Enter both fields.'; return; }
+    const email = selectedRole === 'admin' ? idVal : slug(idVal)+LOGIN_DOMAIN;
     try{
-      await auth.signInWithEmailAndPassword(slug(user)+LOGIN_DOMAIN, pass);
+      await auth.signInWithEmailAndPassword(email, pass);
       err.textContent='';
     }catch(e){
       err.textContent = friendlyAuthError(e);
+    }
+  });
+
+  document.getElementById('forgot-link').addEventListener('click', async (e)=>{
+    e.preventDefault();
+    const idVal = document.getElementById('login-user').value.trim();
+    if(!idVal || !idVal.includes('@')){
+      showToast('Enter your admin email above first, then click Forgot password.', 'error');
+      return;
+    }
+    try{
+      await auth.sendPasswordResetEmail(idVal);
+      showToast('Password reset email sent.', 'success');
+    }catch(e){
+      showToast(friendlyAuthError(e), 'error');
     }
   });
 }
 function friendlyAuthError(e){
   if(!e || !e.code) return 'Something went wrong. Try again.';
   if(e.code.includes('wrong-password') || e.code.includes('user-not-found') || e.code.includes('invalid-credential')) return 'Incorrect username or password.';
-  if(e.code.includes('email-already-in-use')) return 'That username is already taken.';
   if(e.code.includes('weak-password')) return 'Password needs to be at least 6 characters.';
   return e.message || 'Something went wrong. Try again.';
 }
