@@ -329,6 +329,17 @@ function openAddStaff(){
   `);
   document.getElementById('staff-acc-close').addEventListener('click', closeModal);
 }
+
+async function confirmDeleteStaff(uid, name){
+  openModal(`
+    <h3>Delete staff account?</h3>
+    <div class="sub">${name}</div>
+    <div class="login-note" style="margin-top:8px;">This removes their access within the app. Note: the underlying Firebase Authentication login isn't deleted automatically (that needs admin-level access) — for full cleanup also remove them in Firebase Console → Authentication → Users.</div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="staff-del-cancel">Cancel</button>
+      <button class="btn danger" id="staff-del-confirm">Delete account</button>
+    </div>
+  `);
   document.getElementById('staff-del-cancel').addEventListener('click', closeModal);
   document.getElementById('staff-del-confirm').addEventListener('click', async ()=>{
     try{
