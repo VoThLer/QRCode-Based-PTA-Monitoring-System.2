@@ -381,6 +381,7 @@ function wirePageEvents(){
  wireDeleteButtons(main);
  main.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', ()=>openEditStudent(b.dataset.edit)));
  main.querySelectorAll('[data-staff-delete]').forEach(b=>b.addEventListener('click', ()=>confirmDeleteStaff(b.dataset.staffDelete, b.dataset.staffName)));
+ main.querySelectorAll('[data-staff-account]').forEach(b=>b.addEventListener('click', ()=>openStaffAccountModal(b.dataset.staffAccount))); 
   
   const addBtn = document.getElementById('btn-add-student');
   if(addBtn) addBtn.addEventListener('click', ()=>openEditStudent(null));
