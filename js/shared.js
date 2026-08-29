@@ -103,7 +103,7 @@ function wireLogout(){
     window.location.href = 'index.html';
   });
 }
-const IDLE_LIMIT_MS = 30 * 60 * 1000; // 30 minutes
+const IDLE_LIMIT_MS = 15 * 60 * 1000; // 15 minutes
 let idleTimer;
 function resetIdleTimer(){
   clearTimeout(idleTimer);
