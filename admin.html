@@ -163,7 +163,7 @@ async function pagePayments(){
 }
 
 async function pageStaff(){
-  const snap = await fsDb.collection('accounts').where('role','in',['principal','adviser']).get();
+  await fsDb.collection('students').doc(id).set({name, grade, section, parentContact, studentUid, parentUid, studentPassword:studentPass, parentPassword:parentPass});
   const staff = snap.docs.map(d=>({uid:d.id, ...d.data()}));
   return `
     <div class="page-header">
