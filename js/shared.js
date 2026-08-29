@@ -102,7 +102,21 @@ function wireLogout(){
     window.location.href = 'index.html';
   });
 }
-
+const IDLE_LIMIT_MS = 30 * 60 * 1000; // 30 minutes
+let idleTimer;
+function resetIdleTimer(){
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(async ()=>{
+    await auth.signOut();
+    window.location.href = 'index.html';
+  }, IDLE_LIMIT_MS);
+}
+function startIdleWatcher(){
+  ['mousemove','keydown','click','scroll','touchstart'].forEach(evt=>{
+    document.addEventListener(evt, resetIdleTimer);
+  });
+  resetIdleTimer();
+}
 /* ============================================================
    DATA HELPERS (Firestore queries, scoped per role by design)
 ============================================================ */
