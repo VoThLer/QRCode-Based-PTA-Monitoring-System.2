@@ -317,6 +317,19 @@ function openAddStaff(){
       <button class="btn danger" id="staff-del-confirm">Delete account</button>
     </div>
   `);
+  async function openStaffAccountModal(uid){
+  const doc = await fsDb.collection('accounts').doc(uid).get();
+  if(!doc.exists) return;
+  const a = doc.data();
+  openModal(`
+    <h3>Staff Account</h3>
+    <div class="sub">${a.name}${a.section?' · Section '+a.section:''} · ${a.role}</div>
+    <div class="staff-row"><div><strong>Login</strong><br>Username: <span class="id-mono">${a.username}</span></div><span class="id-mono">${a.password||'—'}</span></div>
+    ${!a.password?`<div class="login-note" style="margin-top:8px;">Password wasn't saved (created before this feature). Delete and re-add to set a viewable password.</div>`:''}
+    <div class="modal-actions"><button class="btn ghost" id="staff-acc-close">Close</button></div>
+  `);
+  document.getElementById('staff-acc-close').addEventListener('click', closeModal);
+}
   document.getElementById('staff-del-cancel').addEventListener('click', closeModal);
   document.getElementById('staff-del-confirm').addEventListener('click', async ()=>{
     try{
