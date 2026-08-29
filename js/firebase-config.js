@@ -71,6 +71,7 @@ const LOGIN_DOMAIN = '@eskwelapay.local';
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const fsDb = firebase.firestore();
+auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 function secondaryAuth(){
   let app = firebase.apps.find(a=>a.name==='Secondary');
   if(!app) app = firebase.initializeApp(firebaseConfig, 'Secondary');
