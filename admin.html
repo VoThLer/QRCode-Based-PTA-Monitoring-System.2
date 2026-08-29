@@ -206,7 +206,6 @@ function pageSettings(){
 
 /* ============================================================
    MODALS: QR / Add-Edit Student / Add Staff
-   (openQrModal lives in shared.js - it's reused by advisers/principal too)
 ============================================================ */
 async function openEditStudent(studentId){
   const s = studentId ? await fetchOneStudent(studentId) : {id:'', name:'', grade:'Grade 9', section:'', parentContact:''};
@@ -256,7 +255,7 @@ async function openEditStudent(studentId){
       const parentUid = parentCred.user.uid;
       await secAuth.signOut();
 
-      await fsDb.collection('students').doc(id).set({name, grade, section, parentContact, studentUid, parentUid});
+      await fsDb.collection('students').doc(id).set({name, grade, section, parentContact, studentUid, parentUid, studentPassword:studentPass, parentPassword:parentPass});
       await fsDb.collection('accounts').doc(studentUid).set({role:'student', name, studentId:id, username:id});
       await fsDb.collection('accounts').doc(parentUid).set({role:'parent', name:'Parent of '+name, studentId:id, username:id+'.parent'});
 
@@ -306,17 +305,36 @@ function openAddStaff(){
       <button class="btn navy" id="s-save">Create account</button>
     </div>
   `);
-  async function confirmDeleteStaff(uid, name){
-  openModal(`
-    <h3>Delete staff account?</h3>
-    <div class="sub">${name}</div>
-    <div class="login-note" style="margin-top:8px;">This removes their access within the app. Note: the underlying Firebase Authentication login isn't deleted automatically (that needs admin-level access) — for full cleanup also remove them in Firebase Console → Authentication → Users.</div>
-    <div class="modal-actions">
-      <button class="btn ghost" id="staff-del-cancel">Cancel</button>
-      <button class="btn danger" id="staff-del-confirm">Delete account</button>
-    </div>
-  `);
-  async function openStaffAccountModal(uid){
+  document.getElementById('s-cancel').addEventListener('click', closeModal);
+  document.getElementById('s-save').addEventListener('click', async ()=>{
+    const name = document.getElementById('s-name').value.trim();
+    const role = document.getElementById('s-role').value;
+    const section = document.getElementById('s-section').value.trim();
+    const username = document.getElementById('s-user').value.trim();
+    if(!name || !username || (role==='adviser' && !section)){ showToast('Fill in every required field.', 'error'); return; }
+    try{
+      const pass = genPassword();
+      const secAuth = secondaryAuth();
+      const cred = await secAuth.createUserWithEmailAndPassword(slug(username)+LOGIN_DOMAIN, pass);
+      await secAuth.signOut();
+      const doc = {role, name, username:slug(username), password:pass};
+      if(role==='adviser') doc.section = section;
+      await fsDb.collection('accounts').doc(cred.user.uid).set(doc);
+      closeModal();
+      showToast('Staff account created.', 'success');
+      openModal(`
+        <h3>Staff account created</h3>
+        <div class="staff-row"><div><strong>${name}</strong><br>${role}${section?' · '+section:''}</div></div>
+        <div class="staff-row"><div>Username</div><span class="id-mono">${slug(username)}</span></div>
+        <div class="staff-row"><div>Password</div><span class="id-mono">${pass}</span></div>
+        <div class="modal-actions"><button class="btn navy" id="s-done">Done</button></div>
+      `);
+      document.getElementById('s-done').addEventListener('click', ()=>{ closeModal(); renderPage(); });
+    }catch(e){ showToast('Could not create account: '+(e.message||e), 'error'); }
+  });
+}
+
+async function openStaffAccountModal(uid){
   const doc = await fsDb.collection('accounts').doc(uid).get();
   if(!doc.exists) return;
   const a = doc.data();
@@ -352,34 +370,6 @@ async function confirmDeleteStaff(uid, name){
     }
   });
 }
-  document.getElementById('s-cancel').addEventListener('click', closeModal);
-  document.getElementById('s-save').addEventListener('click', async ()=>{
-    const name = document.getElementById('s-name').value.trim();
-    const role = document.getElementById('s-role').value;
-    const section = document.getElementById('s-section').value.trim();
-    const username = document.getElementById('s-user').value.trim();
-    if(!name || !username || (role==='adviser' && !section)){ showToast('Fill in every required field.', 'error'); return; }
-    try{
-      const pass = genPassword();
-      const secAuth = secondaryAuth();
-      const cred = await secAuth.createUserWithEmailAndPassword(slug(username)+LOGIN_DOMAIN, pass);
-      await secAuth.signOut();
-      const doc = {role, name, username:slug(username), password:pass};
-      if(role==='adviser') doc.section = section;
-      await fsDb.collection('accounts').doc(cred.user.uid).set(doc);
-      closeModal();
-      showToast('Staff account created.', 'success');
-      openModal(`
-        <h3>Staff account created</h3>
-        <div class="staff-row"><div><strong>${name}</strong><br>${role}${section?' · '+section:''}</div></div>
-        <div class="staff-row"><div>Username</div><span class="id-mono">${slug(username)}</span></div>
-        <div class="staff-row"><div>Password</div><span class="id-mono">${pass}</span></div>
-        <div class="modal-actions"><button class="btn navy" id="s-done">Done</button></div>
-      `);
-      document.getElementById('s-done').addEventListener('click', ()=>{ closeModal(); renderPage(); });
-    }catch(e){ showToast('Could not create account: '+(e.message||e), 'error'); }
-  });
-}
 
 /* ============================================================
    EVENT WIRING
@@ -387,12 +377,12 @@ async function confirmDeleteStaff(uid, name){
 function wirePageEvents(){
   const main = document.getElementById('main');
 
- wireQrButtons(main);
- wireDeleteButtons(main);
- main.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', ()=>openEditStudent(b.dataset.edit)));
- main.querySelectorAll('[data-staff-delete]').forEach(b=>b.addEventListener('click', ()=>confirmDeleteStaff(b.dataset.staffDelete, b.dataset.staffName)));
- main.querySelectorAll('[data-staff-account]').forEach(b=>b.addEventListener('click', ()=>openStaffAccountModal(b.dataset.staffAccount))); 
-  
+  wireQrButtons(main);
+  wireDeleteButtons(main);
+  main.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', ()=>openEditStudent(b.dataset.edit)));
+  main.querySelectorAll('[data-staff-delete]').forEach(b=>b.addEventListener('click', ()=>confirmDeleteStaff(b.dataset.staffDelete, b.dataset.staffName)));
+  main.querySelectorAll('[data-staff-account]').forEach(b=>b.addEventListener('click', ()=>openStaffAccountModal(b.dataset.staffAccount)));
+
   const addBtn = document.getElementById('btn-add-student');
   if(addBtn) addBtn.addEventListener('click', ()=>openEditStudent(null));
 
