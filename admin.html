@@ -340,7 +340,7 @@ function openAddStaff(){
       const secAuth = secondaryAuth();
       const cred = await secAuth.createUserWithEmailAndPassword(slug(username)+LOGIN_DOMAIN, pass);
       await secAuth.signOut();
-      const doc = {role, name, username:slug(username)};
+      const doc = {role, name, username:slug(username), password:pass};
       if(role==='adviser') doc.section = section;
       await fsDb.collection('accounts').doc(cred.user.uid).set(doc);
       closeModal();
