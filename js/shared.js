@@ -218,11 +218,16 @@ async function confirmDeleteStudent(studentId){
 }
 async function openQrModal(studentId){
   const s = await fetchOneStudent(studentId);
+  const credsHtml = (s.studentPassword || s.parentPassword) ? `
+    <div class="staff-row"><div><strong>Student login</strong><br>Username: <span class="id-mono">${s.id}</span></div><span class="id-mono">${s.studentPassword||'—'}</span></div>
+    <div class="staff-row"><div><strong>Parent login</strong><br>Username: <span class="id-mono">${s.id}.parent</span></div><span class="id-mono">${s.parentPassword||'—'}</span></div>
+  ` : `<div class="login-note" style="margin-top:8px;">Credentials for this account weren't saved (created before this feature). To help this student, use Delete then re-add them.</div>`;
   openModal(`
     <h3>Student Account &amp; QR Code</h3>
     <div class="sub">${s.name} · ${s.grade} · Section ${s.section}</div>
     <div class="qr-box"><div id="qr-render"></div><div class="qr-id">${s.id}</div></div>
-    <div class="login-note" style="margin-top:2px;">Give this Student ID and the credentials printed at account-creation time to the student or parent. The QR code is for quick ID lookup, it does not contain the password.</div>
+    ${credsHtml}
+    <div class="login-note" style="margin-top:2px;">The QR code is for quick ID lookup, it does not contain the password.</div>
     <div class="modal-actions">
       <button class="btn ghost" id="qr-close">Close</button>
       <button class="btn navy" id="qr-print">🖶 Print / distribute</button>
