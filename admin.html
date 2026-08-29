@@ -163,7 +163,7 @@ async function pagePayments(){
 }
 
 async function pageStaff(){
-  await fsDb.collection('students').doc(id).set({name, grade, section, parentContact, studentUid, parentUid, studentPassword:studentPass, parentPassword:parentPass});
+  const snap = await fsDb.collection('accounts').where('role','in',['principal','adviser']).get();
   const staff = snap.docs.map(d=>({uid:d.id, ...d.data()}));
   return `
     <div class="page-header">
@@ -182,11 +182,10 @@ async function pageStaff(){
             <button class="btn sm ghost danger" data-staff-delete="${a.uid}" data-staff-name="${a.name}">Delete</button>
           </div>
         </div>
-`).join('') : `<div class="empty-state">No Principal or Adviser accounts yet.</div>`}
+      `).join('') : `<div class="empty-state">No Principal or Adviser accounts yet.</div>`}
     </div>
   `;
 }
-
 function pageSettings(){
   return `
     <div class="page-header">
