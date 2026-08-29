@@ -83,6 +83,7 @@ function guardPage(allowedRoles, onReady){
     setRolePill();
     wireLogout();
     wireModalBackdrop();
+    startIdleWatcher();
     onReady(session);
   });
 }
