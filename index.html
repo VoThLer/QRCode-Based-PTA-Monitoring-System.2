@@ -25,10 +25,10 @@
 let selectedRole = null;
 
 const ROLES = [
-  {key:'admin', title:'PTA Officer / Admin', desc:'Manage payment records and system data.', icon:'👤'},
-  {key:'adviser', title:'Adviser / Teacher', desc:'View payment info of assigned students only.', icon:'📗'},
-  {key:'principal', title:'Principal', desc:'View payment info of all students in the school.', icon:'🎓'},
-  {key:'student', title:'Student / Parent', desc:'View your own student\'s payment info.', icon:'👪'},
+  {key:'admin', title:'PTA Officer / Admin', icon:'👤'},
+  {key:'adviser', title:'Adviser / Teacher', icon:'📗'},
+  {key:'principal', title:'Principal', icon:'🎓'},
+  {key:'student', title:'Student / Parent', icon:'👪'},
 ];
 
 function boot(){
@@ -63,7 +63,6 @@ function showLogin(){
         <div class="role-card" data-role="${r.key}">
           <div class="role-icon">${r.icon}</div>
           <div class="role-title">${r.title}</div>
-          <div class="role-desc">${r.desc}</div>
         </div>
       `).join('')}
     </div>
