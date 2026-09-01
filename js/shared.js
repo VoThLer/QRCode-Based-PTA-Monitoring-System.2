@@ -46,7 +46,7 @@ function wireModalBackdrop(){
 let session = null;       // {uid, role, name, section, studentId}
 let SETTINGS = {amountDue:500, deadline:'2026-12-15', schoolYear:'2026-2027'};
 
-const ROLE_LABEL = {admin:'Admin', principal:'Principal', adviser:'Adviser', parent:'Student-Parent', student:'Student'};
+const ROLE_LABEL = {admin:'Admin', principal:'Principal', adviser:'Adviser', parent:'Parent', student:'Student'};
 const HOME_PAGE = {admin:'admin.html', principal:'principal.html', adviser:'adviser.html', parent:'student-parent.html', student:'student-parent.html'};
 
 async function loadSettings(){
