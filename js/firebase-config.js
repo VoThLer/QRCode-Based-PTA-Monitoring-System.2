@@ -14,12 +14,12 @@
    js/shared.js and any page-specific script.
 ============================================================ */
 const firebaseConfig = {
-  apiKey: "AIzaSyDTHf5gyY-3R8ZuIIrz3ZVidRO1RmMCAhg",
-  authDomain: "pta-monitoring-system.firebaseapp.com",
-  projectId: "pta-monitoring-system",
-  storageBucket: "pta-monitoring-system.firebasestorage.app",
-  messagingSenderId: "619908816405",
-  appId: "1:619908816405:web:8b3c3bb1897f2de011781c"
+  apiKey: "AIzaSyAFMg6aJIKExIc8S3VanB-NHnIZfLpng5s",
+  authDomain: "pta-monitoring-system-4e00a.firebaseapp.com",
+  projectId: "pta-monitoring-system-4e00a",
+  storageBucket: "pta-monitoring-system-4e00a.firebasestorage.app",
+  messagingSenderId: "293969719152",
+  appId: "1:293969719152:web:7dd2027df8cf41c685a9b5"
 };
 
 /* Paste this into Firestore Database -> Rules tab in the console:
