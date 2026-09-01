@@ -277,3 +277,41 @@
 .btn.sm.ghost.danger{ background:#b3261e; color:#fff; border-color:#b3261e; }
 .btn.sm.ghost.danger:hover{ background:#8f1e17; }
 .btn.sm.ghost.danger:hover{ background:#fbeae8; }
+
+/* ============================================================
+   MOBILE RESPONSIVE FIXES
+============================================================ */
+.panel{ overflow-x:auto; }
+
+@media(max-width:760px){
+  .topbar{ padding:12px 14px; flex-wrap:wrap; gap:8px; }
+  .topbar-right{ gap:8px; }
+  .role-pill{ font-size:11px; padding:5px 9px; }
+  .btn-logout{ padding:6px 10px; font-size:11.5px; }
+
+  .shell{ flex-direction:column; }
+  .sidebar{
+    width:100%; min-height:auto; display:flex; overflow-x:auto;
+    gap:6px; padding:10px 12px; border-right:none; border-bottom:1px solid var(--border);
+  }
+  .nav-item{ white-space:nowrap; width:auto; margin-bottom:0; flex-shrink:0; }
+  .main{ padding:18px 16px 40px; }
+
+  .receipt-card{ padding:18px; }
+  .receipt-top{ flex-wrap:wrap; gap:10px; }
+  .receipt-name{ font-size:19px; }
+  .receipt-amounts{ gap:16px; }
+
+  .form-grid{ grid-template-columns:1fr; }
+  .method-grid{ grid-template-columns:repeat(2,1fr); }
+
+  .panel{ padding:16px; }
+  .panel-head{ flex-direction:column; align-items:flex-start; }
+  .toolbar{ width:100%; }
+  .search-input{ min-width:0; width:100%; }
+}
+
+@media(max-width:480px){
+  .login-card{ padding:26px 20px 22px; }
+  .login-card h1{ font-size:24px; }
+}
