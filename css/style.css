@@ -293,12 +293,6 @@
   .sidebar{
     width:100%; min-height:auto; display:flex; overflow-x:auto;
     gap:6px; padding:10px 12px; border-right:none; border-bottom:1px solid var(--border);
-
-  .staff-row{ flex-direction:column; align-items:flex-start; gap:10px; }
-  .staff-row > div:last-child{ width:100%; flex-wrap:wrap; }
-  .staff-row .btn{ flex:1; text-align:center; }
-
-  table{ white-space:nowrap; }
   }
   .nav-item{ white-space:nowrap; width:auto; margin-bottom:0; flex-shrink:0; }
   .main{ padding:18px 16px 40px; }
@@ -315,6 +309,12 @@
   .panel-head{ flex-direction:column; align-items:flex-start; }
   .toolbar{ width:100%; }
   .search-input{ min-width:0; width:100%; }
+
+  .staff-row{ flex-direction:column; align-items:flex-start; gap:10px; }
+  .staff-row > div:last-child{ width:100%; flex-wrap:wrap; }
+  .staff-row .btn{ flex:1; text-align:center; }
+
+  table{ white-space:nowrap; }
 }
 
 @media(max-width:480px){
