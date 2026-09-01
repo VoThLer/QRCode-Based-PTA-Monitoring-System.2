@@ -106,6 +106,13 @@ function showLogin(){
   document.getElementById('id-label').textContent = 'Email';
   document.getElementById('forgot-wrap').style.display = 'block';
 
+  document.getElementById('pw-toggle').addEventListener('click', ()=>{
+    const input = document.getElementById('login-pass');
+    const btn = document.getElementById('pw-toggle');
+    if(input.type==='password'){ input.type='text'; btn.textContent='🙈'; }
+    else{ input.type='password'; btn.textContent='👁'; }
+  });
+
   document.getElementById('login-btn').addEventListener('click', async ()=>{
     const err = document.getElementById('login-error');
     const idVal = document.getElementById('login-user').value.trim();
