@@ -52,6 +52,7 @@ const NAV_ADMIN = [
   {key:'dashboard', label:'Dashboard', icon:'📊'},
   {key:'students', label:'Students', icon:'🧾'},
   {key:'payments', label:'Record Payment', icon:'💳'},
+  {key:'submissions', label:'Payment Submissions', icon:'📥'},
   {key:'staff', label:'Staff Accounts', icon:'🗝️'},
   {key:'reports', label:'Reports & Summary', icon:'📁'},
   {key:'settings', label:'PTA Settings', icon:'⚙️'},
@@ -82,6 +83,7 @@ async function renderPage(){
     if(currentPage==='dashboard') main.innerHTML = await pageDashboard(false);
     if(currentPage==='students') main.innerHTML = await pageStudents();
     if(currentPage==='payments') main.innerHTML = await pagePayments();
+    if(currentPage==='submissions') main.innerHTML = await pageSubmissions();
     if(currentPage==='staff') main.innerHTML = await pageStaff();
     if(currentPage==='reports') main.innerHTML = await pageReports(true);
     if(currentPage==='settings') main.innerHTML = pageSettings();
@@ -161,7 +163,58 @@ async function pagePayments(){
     </div>
   `;
 }
-
+async function pageSubmissions(){
+  const pending = await fetchPendingSubmissions();
+  const students = await fetchAllStudents();
+  return `
+    <div class="page-header">
+      <div class="page-eyebrow">Admin · Verification</div>
+      <h2>Payment Submissions</h2>
+      <div class="page-desc">Review payments submitted by students/parents, then approve or reject after checking your GCash/bank records.</div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Pending (${pending.length})</h3></div>
+      ${pending.length? `
+      <table>
+        <thead><tr><th>Date</th><th>Student</th><th>Method</th><th>Reference</th><th>Amount</th><th></th></tr></thead>
+        <tbody>
+          ${pending.map(p=>{
+            const s = students.find(x=>x.id===p.studentId);
+            return `<tr>
+              <td>${fmtDate(p.date)}</td>
+              <td>${s?s.name:p.studentId} <span class="id-mono">(${p.studentId})</span></td>
+              <td>${p.method}</td>
+              <td class="id-mono">${p.reference}</td>
+              <td>${money(p.amount)}</td>
+              <td style="text-align:right;white-space:nowrap;">
+                <button class="btn sm navy" data-approve="${p.id}">Approve</button>
+                <button class="btn sm ghost danger" data-reject="${p.id}">Reject</button>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>` : `<div class="empty-state">No pending submissions.</div>`}
+    </div>
+  `;
+}
+async function approveSubmission(subId){
+  const doc = await fsDb.collection('paymentSubmissions').doc(subId).get();
+  if(!doc.exists) return;
+  const p = doc.data();
+  try{
+    await fsDb.collection('payments').add({studentId:p.studentId, section:p.section, method:p.method, reference:p.reference, amount:p.amount, date:p.date, verifiedBy:session.name});
+    await fsDb.collection('paymentSubmissions').doc(subId).update({status:'approved'});
+    showToast('Payment approved and recorded.', 'success');
+    renderPage();
+  }catch(e){ showToast('Could not approve: '+(e.message||e), 'error'); }
+}
+async function rejectSubmission(subId){
+  try{
+    await fsDb.collection('paymentSubmissions').doc(subId).update({status:'rejected'});
+    showToast('Submission rejected.', 'success');
+    renderPage();
+  }catch(e){ showToast('Could not reject: '+(e.message||e), 'error'); }
+}
 async function pageStaff(){
   const snap = await fsDb.collection('accounts').where('role','in',['principal','adviser']).get();
   const staff = snap.docs.map(d=>({uid:d.id, ...d.data()}));
@@ -382,7 +435,8 @@ function wirePageEvents(){
   main.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', ()=>openEditStudent(b.dataset.edit)));
   main.querySelectorAll('[data-staff-delete]').forEach(b=>b.addEventListener('click', ()=>confirmDeleteStaff(b.dataset.staffDelete, b.dataset.staffName)));
   main.querySelectorAll('[data-staff-account]').forEach(b=>b.addEventListener('click', ()=>openStaffAccountModal(b.dataset.staffAccount)));
-
+  main.querySelectorAll('[data-approve]').forEach(b=>b.addEventListener('click', ()=>approveSubmission(b.dataset.approve)));
+  main.querySelectorAll('[data-reject]').forEach(b=>b.addEventListener('click', ()=>rejectSubmission(b.dataset.reject)));
   const addBtn = document.getElementById('btn-add-student');
   if(addBtn) addBtn.addEventListener('click', ()=>openEditStudent(null));
 
