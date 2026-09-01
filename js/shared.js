@@ -145,6 +145,14 @@ async function fetchStudentPayments(studentId){
   const snap = await fsDb.collection('payments').where('studentId','==',studentId).get();
   return snap.docs.map(d=>({id:d.id, ...d.data()}));
 }
+async function fetchOwnSubmissions(studentId){
+  const snap = await fsDb.collection('paymentSubmissions').where('studentId','==',studentId).get();
+  return snap.docs.map(d=>({id:d.id, ...d.data()}));
+}
+async function fetchPendingSubmissions(){
+  const snap = await fsDb.collection('paymentSubmissions').where('status','==','pending').get();
+  return snap.docs.map(d=>({id:d.id, ...d.data()}));
+}
 function studentPaidAmount(studentId, payments){
   return payments.filter(p=>p.studentId===studentId).reduce((s,p)=>s+Number(p.amount),0);
 }
