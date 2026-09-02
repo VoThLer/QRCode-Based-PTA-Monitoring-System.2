@@ -242,10 +242,10 @@ async function confirmDeleteStudent(studentId){
 }
 async function openQrModal(studentId){
   const s = await fetchOneStudent(studentId);
-  const credsHtml = (s.studentPassword || s.parentPassword) ? `
+  const credsHtml = isAdmin ? ((s.studentPassword || s.parentPassword) ? `
     <div class="staff-row"><div><strong>Student login</strong><br>Username: <span class="id-mono">${s.id}</span></div><span class="id-mono">${s.studentPassword||'—'}</span></div>
     <div class="staff-row"><div><strong>Parent login</strong><br>Username: <span class="id-mono">${s.id}.parent</span></div><span class="id-mono">${s.parentPassword||'—'}</span></div>
-  ` : `<div class="login-note" style="margin-top:8px;">Credentials for this account weren't saved (created before this feature). To help this student, use Delete then re-add them.</div>`;
+  ` : `<div class="login-note" style="margin-top:8px;">Credentials for this account weren't saved (created before this feature). To help this student, use Delete then re-add them.</div>`) : '';
   openModal(`
     <h3>Student Account &amp; QR Code</h3>
     <div class="sub">${s.name} · ${s.grade} · Section ${s.section}</div>
