@@ -242,6 +242,7 @@ async function confirmDeleteStudent(studentId){
 }
 async function openQrModal(studentId){
   const s = await fetchOneStudent(studentId);
+  const isAdmin = session && session.role === 'admin';
   const credsHtml = isAdmin ? ((s.studentPassword || s.parentPassword) ? `
     <div class="staff-row"><div><strong>Student login</strong><br>Username: <span class="id-mono">${s.id}</span></div><span class="id-mono">${s.studentPassword||'—'}</span></div>
     <div class="staff-row"><div><strong>Parent login</strong><br>Username: <span class="id-mono">${s.id}.parent</span></div><span class="id-mono">${s.parentPassword||'—'}</span></div>
