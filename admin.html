@@ -94,10 +94,6 @@ async function renderPage(){
   }
   wirePageEvents();
 }
-
-/* ============================================================
-   ADMIN-ONLY PAGES
-============================================================ */
 async function pageStudents(){
   const students = await fetchAllStudents();
   const payments = await fetchAllPayments();
@@ -266,10 +262,6 @@ function pageSettings(){
     </div>
   `;
 }
-
-/* ============================================================
-   MODALS: QR / Add-Edit Student / Add Staff
-============================================================ */
 async function openEditStudent(studentId){
   const s = studentId ? await fetchOneStudent(studentId) : {id:'', name:'', grade:'Grade 9', section:'', parentContact:''};
   openModal(`
@@ -433,10 +425,6 @@ async function confirmDeleteStaff(uid, name){
     }
   });
 }
-
-/* ============================================================
-   EVENT WIRING
-============================================================ */
 function wirePageEvents(){
   const main = document.getElementById('main');
 
@@ -518,10 +506,6 @@ function wirePageEvents(){
 
   wireReportEvents();
 }
-
-/* ============================================================
-   INIT
-============================================================ */
 guardPage(['admin'], ()=>{ enterApp(); });
 </script>
 </body>
