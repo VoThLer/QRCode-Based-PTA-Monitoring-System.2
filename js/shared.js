@@ -196,7 +196,7 @@ function studentsTable(list, payments, opts){
           <td>${money(bal)}</td>
           <td>${statusPill(status)}</td>
           <td style="text-align:right;white-space:nowrap;">
-              <button class="btn sm ghost" data-qr="${s.id}">Account</button>
+              ${opts.showAccount!==false?`<button class="btn sm ghost" data-qr="${s.id}">Account</button>`:''}
               ${opts.edit?`<button class="btn sm ghost" data-edit="${s.id}">Edit</button>`:''}
               ${opts.edit?`<button class="btn sm ghost danger" data-delete="${s.id}">Delete</button>`:''}
          </td>
