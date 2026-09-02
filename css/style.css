@@ -284,9 +284,6 @@
 .btn.sm.ghost.danger:hover{ background:#8f1e17; }
 .btn.sm.ghost.danger:hover{ background:#fbeae8; }
 
-/* ============================================================
-   MOBILE RESPONSIVE FIXES
-============================================================ */
 .panel{ overflow-x:auto; }
 
 @media(max-width:760px){
