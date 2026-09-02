@@ -213,6 +213,7 @@ function wireDeleteButtons(root){
 }
 async function confirmDeleteStudent(studentId){
   const s = await fetchOneStudent(studentId);
+  const isAdmin = session && session.role === 'admin';
   if(!s) return;
   openModal(`
     <h3>Delete student?</h3>
