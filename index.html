@@ -72,7 +72,7 @@ function showLogin(){
       <label>Password</label>
       <div class="pw-wrap">
         <input type="password" id="login-pass" autocomplete="current-password">
-        <button type="button" class="pw-toggle" id="pw-toggle">show</button>
+        <button type="button" class="pw-toggle" id="pw-toggle">Show</button>
       </div>
     </div>
     <button class="btn-primary" id="login-btn">Continue</button>
@@ -109,8 +109,8 @@ function showLogin(){
   document.getElementById('pw-toggle').addEventListener('click', ()=>{
     const input = document.getElementById('login-pass');
     const btn = document.getElementById('pw-toggle');
-    if(input.type==='password'){ input.type='text'; btn.textContent='🙈'; }
-    else{ input.type='password'; btn.textContent='👁'; }
+    if(input.type==='password'){ input.type='text'; btn.textContent='Hide'; }
+    else{ input.type='password'; btn.textContent='Show'; }
   });
 
   document.getElementById('login-btn').addEventListener('click', async ()=>{
