@@ -186,6 +186,8 @@
   .btn.danger{color:var(--maroon);border-color:#E4BFC2;}
   .btn.danger:hover{background:var(--maroon-bg);}
   .btn.sm{padding:6px 10px;font-size:12px;}
+  .btn.green{background:var(--green);border-color:var(--green);color:#fff;}
+  .btn.green:hover{background:#175533;}
 
   table{width:100%;border-collapse:collapse;font-size:13.5px;}
   thead th{
