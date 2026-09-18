@@ -13,8 +13,9 @@
    AFTER the three firebase-*-compat.js SDK scripts, and BEFORE
    js/shared.js and any page-specific script.
 ============================================================ */
+//missing "5s")
 const firebaseConfig = {
-  apiKey: "AIzaSyAFMg6aJIKExIc8S3VanB-NHnIZfLpng5s",
+  apiKey: "AIzaSyAFMg6aJIKExIc8S3VanB-NHnIZfLpng",
   authDomain: "pta-monitoring-system-4e00a.firebaseapp.com",
   projectId: "pta-monitoring-system-4e00a",
   storageBucket: "pta-monitoring-system-4e00a.firebasestorage.app",
